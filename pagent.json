@@ -67,11 +67,23 @@
     { "tag": "🤖 OpenAI", "type": "selector", "outbounds": ["节点名字1", "节点名字2"] },
     { "tag": "🎯 全球直连", "type": "direct" },
        {
-      "tag": "节点名字1",
+      "tag": "SEA-US",
       "type": "hysteria2",
-      "server": "154.204.183.217",
-      "server_port": 60449,
-      "password": "c33a010e-b029-4bad-889d-17a5103949a8",
+      "server": "45.76.242.108",
+      "server_port": 443,
+      "password": "KD5njz7fuaXciO0QdSS",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true
+      }
+    },
+           {
+      "tag": "US-SF",
+      "type": "hysteria2",
+      "server": "104.245.36.63",
+      "server_port": 35546,
+      "password": "fe1f62a3-d0fc-4b0a-b1d2-1eede3c32c00",
       "tls": {
         "enabled": true,
         "server_name": "www.bing.com",
@@ -79,11 +91,11 @@
       }
     },
     {
-      "tag": "节点名字2",
+      "tag": "US-SF",
       "type": "vmess",
-      "server": "154.204.183.217",
-      "server_port": 8880,
-      "uuid": "c33a010e-b029-4bad-889d-17a5103949a8",
+      "server": "104.245.36.63",
+      "server_port": 2082,
+      "uuid": "fe1f62a3-d0fc-4b0a-b1d2-1eede3c32c00",
       "security": "auto",
       "alter_id": 0,
       "transport": {
@@ -91,7 +103,7 @@
         "headers": {
           "Host": "www.bing.com"
         },
-        "path": "/c33a010e-b029-4bad-889d-17a5103949a8-vm"
+        "path": "/fe1f62a3-d0fc-4b0a-b1d2-1eede3c32c00-vm"
       }
     }
   ],
