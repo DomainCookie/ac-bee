@@ -1,71 +1,56 @@
 {
   "log": {
-    "disabled": false,
-    "level": "info",
+    "level": "error",
     "timestamp": true
   },
-  
-  "experimental": {
-    "clash_api": {
-      "external_controller": "0.0.0.0:9095",
-      "external_ui": "/etc/sing-box/ui",
-      "secret": "",
-      "external_ui_download_url": "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
-      "external_ui_download_detour": "🚀 节点选择",
-      "default_mode": "rule"
-    },
-    "cache_file": {
-      "enabled": true
-    }
-  },
-  
   "dns": {
     "servers": [
-      { "tag": "proxyDns", "address": "tls://8.8.8.8", "detour": "🚀 节点选择" },
-      { "tag": "localDns", "address": "223.5.5.5", "detour": "🎯 全球直连" }
+      {
+        "type": "https",
+        "tag": "tx",
+        "server": "223.5.5.5",
+        "server_port": 443
+      },
+      {
+        "type": "local",
+        "tag": "ls"
+      },
+      {
+        "type": "https",
+        "tag": "cfg-google-dns",
+        "detour": "ss-out",
+        "server": "8.8.8.8",
+        "server_port": 443
+      }
     ],
     "rules": [
-      { "outbound": "any", "server": "localDns", "disable_cache": true },
-      { "rule_set": "geosite-cn", "server": "localDns" },   
-      { "clash_mode": "direct", "server": "localDns" },
-      { "clash_mode": "global", "server": "proxyDns" },
-      { "rule_set": "geosite-geolocation-!cn", "server": "proxyDns" }
+      {
+        "rule_set": "cfg-cnsite-rule",
+        "server": "tx"
+      }
     ],
-    "final": "localDns",
+    "final": "cfg-google-dns",
     "strategy": "ipv4_only"
   },
-
-"inbounds": [
-  {
-    "type": "tun",
-    "address": "172.19.0.1/30",
-    "mtu": 9000,
-    "auto_route": true,
-    "auto_redirect": true,
-    "strict_route": true,
-    "stack": "system",
-    "platform": {
-      "http_proxy": {
-        "enabled": true,
-        "server": "127.0.0.1",
-        "server_port": 2080
-      }
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "mtu": 1400,
+      "address": [
+        "172.18.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "system"
     }
-  },
-  {
-    "type": "mixed",
-    "listen": "127.0.0.1",
-    "listen_port": 2080,
-    "sniff": true,
-    "users": []
-  }
-],
-
-
+  ],
   "outbounds": [
-    { "tag": "🚀 节点选择", "type": "selector", "outbounds": ["SEA-US", "US-SF"] },
-    { "tag": "🤖 OpenAI", "type": "selector", "outbounds": ["SEA-US", "US-SF"] },
-    { "tag": "🎯 全球直连", "type": "direct" },
+    {
+      "type": "direct",
+      "tag": "direct-out"
+    },
     {
       "tag": "SEA-US",
       "type": "hysteria2",
@@ -95,28 +80,58 @@
       }
     }
   ],
-  
   "route": {
-        "auto_detect_interface": true,
-        "final": "🚀 节点选择",
     "rules": [
-      {"action": "sniff"},
-      {"protocol": "dns", "action": "hijack-dns"},
-      { "clash_mode": "direct", "outbound": "🎯 全球直连" },
-      { "clash_mode": "global", "outbound": "GLOBAL" },
-      { "domain": ["clash.razord.top", "yacd.metacubex.one", "yacd.haishan.me", "d.metacubex.one"], "outbound": "🎯 全球直连" },
-      { "rule_set": "geosite-private", "outbound": "🎯 全球直连" },
-      { "rule_set": "geosite-chat", "outbound": "🤖 OpenAI" },  
-      { "rule_set": "geosite-geolocation-!cn", "outbound": "🚀 节点选择" },
-      { "rule_set": ["geoip-cn", "geosite-cn"], "outbound": "🎯 全球直连" }
+      {
+        "action": "sniff"
+      },
+      {
+        "protocol": [
+          "bittorrent",
+          "quic"
+        ],
+        "action": "reject",
+        "method": "default"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "rule_set": [
+          "cfg-cnip-rule",
+          "cfg-cnsite-rule"
+        ],
+        "outbound": "direct-out"
+      }
     ],
-    
     "rule_set": [
-      { "tag": "geosite-chat", "type": "remote", "format": "binary", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ai-chat-!cn.srs", "download_detour": "🚀 节点选择" },
-      { "tag": "geosite-geolocation-!cn", "type": "remote", "format": "binary", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/geolocation-!cn.srs", "download_detour": "🚀 节点选择" },
-      { "tag": "geoip-cn", "type": "remote", "format": "binary", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/cn.srs", "download_detour": "🚀 节点选择" },
-      { "tag": "geosite-cn", "type": "remote", "format": "binary", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.srs", "download_detour": "🚀 节点选择" },
-      { "tag": "geosite-private", "type": "remote", "format": "binary", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/private.srs", "download_detour": "🚀 节点选择" }
-    ]
+      {
+        "type": "remote",
+        "tag": "cfg-cnip-rule",
+        "format": "binary",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo-lite/geoip/cn.srs",
+        "download_detour": "ss-out"
+      },
+      {
+        "type": "remote",
+        "tag": "cfg-cnsite-rule",
+        "format": "binary",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo-lite/geosite/cn.srs",
+        "download_detour": "ss-out"
+      }
+    ],
+    "final": "ss-out",
+    "auto_detect_interface": true,
+    "default_domain_resolver": {
+      "server": "ls",
+      "strategy": "ipv4_only",
+      "client_subnet": "218.29.136.42"
+    }
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true
+    }
   }
 }
