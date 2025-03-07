@@ -63,8 +63,8 @@
 
 
   "outbounds": [
-    { "tag": "🚀 节点选择", "type": "selector", "outbounds": ["节点名字1", "节点名字2"] },
-    { "tag": "🤖 OpenAI", "type": "selector", "outbounds": ["节点名字1", "节点名字2"] },
+    { "tag": "🚀 节点选择", "type": "selector", "outbounds": ["🤖 OpenAI", "🎯 全球直连"] },
+    { "tag": "🤖 OpenAI", "type": "selector", "outbounds": ["🤖 OpenAI", "🎯 全球直连"] },
     { "tag": "🎯 全球直连", "type": "direct" },
        {
       "tag": "SEA-US",
